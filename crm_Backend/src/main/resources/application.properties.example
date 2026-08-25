@@ -1,0 +1,7 @@
+spring.datasource.url=jdbc:postgresql://localhost:5432/crm_database
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_PASSWORD_HERE
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
