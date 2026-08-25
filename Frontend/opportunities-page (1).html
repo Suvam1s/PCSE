@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Opportunities · CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME TOKENS
+     ============================================================ */
+  :root{
+    --bg: #0F1116;
+    --card: #15171D;
+    --card-header: #191C23;
+    --row-hover: #191C23;
+    --border: #252932;
+    --border-strong: #343946;
+    --input-bg: #14161C;
+    --input-border: #333844;
+    --text-primary: #F5F6F7;
+    --text-secondary: #8B93A1;
+    --text-tertiary: #5B6270;
+    --accent: #6366F1;
+    --accent-hover: #7B7EF5;
+    --success: #34D399;
+    --info: #38BDF8;
+    --amber: #FBBF24;
+    --danger: #F87171;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body{
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 24px;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .wrap{ max-width: 1200px; margin: 0 auto; }
+
+  /* ============================================================
+     PAGE HEADER
+     ============================================================ */
+  .page-header{ margin-bottom: 24px; }
+  .page-header h1{
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .page-header p{
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* ============================================================
+     BUTTONS
+     ============================================================ */
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease;
+    white-space: nowrap;
+  }
+  .btn:disabled{ opacity: .55; cursor: not-allowed; }
+  .btn-secondary{
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: #D7DAE0;
+    padding: 9px 14px;
+  }
+  .btn-secondary:hover:not(:disabled){ background: #20232C; border-color: var(--border-strong); }
+  .btn-primary{
+    background: var(--accent);
+    border: 1px solid transparent;
+    color: #fff;
+    font-weight: 600;
+    padding: 9px 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .btn-primary:hover:not(:disabled){ background: var(--accent-hover); }
+  .btn-ghost{
+    background: transparent;
+    border: 1px solid var(--input-border);
+    color: #C7CBD3;
+    padding: 8px 14px;
+  }
+  .btn-ghost:hover:not(:disabled){ background: #20232C; }
+  .btn-edit{
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #C7CBD3;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+  .btn-edit:hover{ background: #20232C; border-color: var(--border-strong); }
+
+  .spinner{
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff;
+    animation: spin .7s linear infinite;
+    flex-shrink: 0;
+    display: none;
+  }
+  .btn.loading .spinner{ display: inline-block; }
+  .btn.loading .btn-label{ opacity: .8; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  /* ============================================================
+     ANALYTICS SECTION
+     ============================================================ */
+  .analytics-card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .analytics-card-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .analytics-card-head h2{
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #E7E9ED;
+  }
+  .analytics-card-head span{
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+  .analytics-buttons{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .analytics-result{
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--input-bg);
+    padding: 16px 18px;
+    display: none;
+  }
+  .analytics-result.show{ display: block; }
+  .analytics-result.state-error{ border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.06); }
+  .analytics-result .result-title{
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-tertiary);
+    margin: 0 0 6px;
+  }
+  .analytics-result .result-value{
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .analytics-result .result-value.error-text{
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--danger);
+  }
+  .analytics-result .result-footnote{
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+  .opp-mini{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .opp-mini-row{
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #C7CBD3;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .opp-mini-row:last-child{ border-bottom: none; }
+  .opp-mini-row .k{ color: var(--text-tertiary); }
+  .opp-mini-row .v{ font-weight: 500; color: var(--text-primary); }
+
+  /* ============================================================
+     CARD / TABLE
+     ============================================================ */
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .card-header{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-header h2{
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #E7E9ED;
+  }
+  .card-header .count{
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #767D8A;
+  }
+
+  .search{ position: relative; width: 240px; max-width: 100%; }
+  .search svg{
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+  .search input{
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 8px 12px 8px 30px;
+    font-size: 14px;
+    color: #E7E9ED;
+    font-family: inherit;
+  }
+  .search input::placeholder{ color: var(--text-tertiary); }
+  .search input:focus{
+    outline: none;
+    border-color: rgba(99,102,241,.6);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+  }
+
+  .table-scroll{ overflow-x: auto; }
+  table{ width: 100%; min-width: 980px; border-collapse: collapse; text-align: left; }
+  thead tr{ background: var(--card-header); }
+  th{
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #767D8A;
+    padding: 12px 20px;
+  }
+  th.right, td.right{ text-align: right; }
+  tbody tr{
+    border-top: 1px solid #21242C;
+    font-size: 14px;
+    color: #C7CBD3;
+    transition: background-color .12s ease;
+  }
+  tbody tr:hover{ background: var(--row-hover); }
+  td{ padding: 14px 20px; white-space: nowrap; }
+  .acct-name{ font-weight: 500; color: #F0F1F3; }
+  .muted-cell{ color: #8B93A1; font-size: 12px; }
+  .id-cell{ color: #767D8A; font-size: 12px; }
+  .activity-cell{ color: #AEB4C0; font-size: 13px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+  .amount-cell{ font-weight: 600; color: #F0F1F3; }
+  .empty-row td, .state-row td{ text-align: center; padding: 40px 20px; color: #767D8A; font-size: 14px; }
+
+  /* Stage badge - neutral/indigo label */
+  .stage-badge{
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #A5B4FC;
+    background: rgba(99,102,241,.1);
+    box-shadow: inset 0 0 0 1px rgba(99,102,241,.25);
+    white-space: nowrap;
+  }
+
+  /* Status badges */
+  .badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .badge .dot{ width: 6px; height: 6px; border-radius: 50%; }
+  .badge-pipeline{ color: var(--info); background: rgba(56,189,248,.1); box-shadow: inset 0 0 0 1px rgba(56,189,248,.25); }
+  .badge-pipeline .dot{ background: var(--info); }
+  .badge-completed{ color: var(--success); background: rgba(52,211,153,.1); box-shadow: inset 0 0 0 1px rgba(52,211,153,.25); }
+  .badge-completed .dot{ background: var(--success); }
+  .badge-potential{ color: var(--amber); background: rgba(251,191,36,.1); box-shadow: inset 0 0 0 1px rgba(251,191,36,.25); }
+  .badge-potential .dot{ background: var(--amber); }
+
+  /* ============================================================
+     MODAL
+     ============================================================ */
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 50;
+  }
+  .modal-overlay.open{ display: flex; }
+  .modal{
+    width: 100%;
+    max-width: 440px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-header{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+  }
+  .modal-header h3{ margin: 0; font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .modal-header p{ margin: 2px 0 0; font-size: 12px; color: var(--text-secondary); }
+  .modal-close{
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+  }
+  .modal-close:hover{ background: #252932; color: #D7DAE0; }
+
+  .modal-body{ padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .field label{
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9AA0AC;
+    margin-bottom: 6px;
+  }
+  .field input, .field select{
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #F2F3F5;
+    font-family: inherit;
+  }
+  .field select{ appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B93A1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+  }
+  .field input::placeholder{ color: #5B6270; }
+  .field input:focus, .field select:focus{
+    outline: none;
+    border-color: rgba(99,102,241,.6);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+  }
+  .field-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .modal-footer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 0;
+    background: var(--card);
+  }
+
+  @media (max-width: 640px){
+    body{ padding: 20px 14px; }
+    .search{ width: 100%; }
+    .card-header{ flex-direction: column; align-items: stretch; }
+    .field-row{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============================================================
+       PAGE HEADER
+       ============================================================ -->
+  <div class="page-header">
+    <h1>Opportunities</h1>
+    <p>Track, manage, and analyze sales opportunities.</p>
+  </div>
+
+  <!-- ============================================================
+       ANALYTICS SECTION (backend-driven)
+       ============================================================ -->
+  <div class="analytics-card">
+    <div class="analytics-card-head">
+      <h2>Opportunity Analytics</h2>
+      <span>Values are calculated by the backend API</span>
+    </div>
+
+    <div class="analytics-buttons">
+      <button class="btn btn-secondary" data-analytics="pipelineTotal">
+        <span class="spinner"></span><span class="btn-label">Get Pipeline Total</span>
+      </button>
+      <button class="btn btn-secondary" data-analytics="committedTotal">
+        <span class="spinner"></span><span class="btn-label">Get Committed Total</span>
+      </button>
+      <button class="btn btn-secondary" data-analytics="totalAmount">
+        <span class="spinner"></span><span class="btn-label">Get Total Amount</span>
+      </button>
+      <button class="btn btn-secondary" data-analytics="dueAmount">
+        <span class="spinner"></span><span class="btn-label">Get Due Amount</span>
+      </button>
+      <button class="btn btn-secondary" data-analytics="highestOpportunity">
+        <span class="spinner"></span><span class="btn-label">Get Highest Opportunity</span>
+      </button>
+    </div>
+
+    <div class="analytics-result" id="analyticsResult">
+      <p class="result-title" id="resultTitle">—</p>
+      <div id="resultBody"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       OPPORTUNITIES TABLE
+       ============================================================ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Opportunities</h2>
+        <p class="count" id="resultCount">0 opportunities</p>
+      </div>
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" placeholder="Search opportunities..." />
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Account Name</th>
+            <th>Close Date</th>
+            <th>Amount</th>
+            <th>Recent Activity</th>
+            <th>Stage</th>
+            <th>Status</th>
+            <th class="right">Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr class="state-row"><td colspan="8">Loading opportunities...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     EDIT OPPORTUNITY MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Update Opportunity</h3>
+        <p id="modalOppId">OP-0000</p>
+      </div>
+      <button class="modal-close" id="modalCloseBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="field">
+        <label for="fieldAccountName">Account Name</label>
+        <input type="text" id="fieldAccountName" placeholder="Account name" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="fieldCloseDate">Close Date</label>
+          <input type="date" id="fieldCloseDate" />
+        </div>
+        <div class="field">
+          <label for="fieldAmount">Amount (₹)</label>
+          <input type="number" id="fieldAmount" placeholder="0" min="0" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fieldActivity">Recent Activity</label>
+        <input type="text" id="fieldActivity" placeholder="e.g. Called client" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="fieldStage">Stage</label>
+          <select id="fieldStage">
+            <option value="PROSPECTING">PROSPECTING</option>
+            <option value="QUALIFICATION">QUALIFICATION</option>
+            <option value="NEEDS_ANALYSIS">NEEDS_ANALYSIS</option>
+            <option value="VALUE_PROPOSITION">VALUE_PROPOSITION</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fieldStatus">Status</label>
+          <select id="fieldStatus">
+            <option value="Pipeline">Pipeline</option>
+            <option value="Completed">Completed</option>
+            <option value="Potential">Potential</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="modalCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="modalSaveBtn"><span class="spinner"></span><span class="btn-label">Update Opportunity</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1. CONFIG
+   ================================================================ */
+const API_BASE_URL = "http://localhost:8080/api/opportunities";
+
+/* ================================================================
+   2. API SERVICE LAYER
+   All network calls live here. UI code never calls fetch() directly.
+   Endpoint paths are placeholders — update them to match your
+   Spring Boot @RequestMapping paths.
+   ================================================================ */
+const OpportunityAPI = {
+  async _get(path){
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+    if(!res.ok) throw new Error(`Request failed (${res.status})`);
+    return res.json();
+  },
+
+  async _put(path, body){
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error(`Request failed (${res.status})`);
+    return res.json();
+  },
+
+  // ---- Reads ----
+  listOpportunities(){
+    return this._get("http://localhost:8080/api/opportunities");
+  },
+
+  // ---- Analytics (all calculated server-side) ----
+  getPipelineTotal(){
+    return this._get("http://localhost:8080/api/opportunities/pipeline");
+  },
+  getCommittedTotal(){
+    return this._get("http://localhost:8080/api/opportunities/committed");
+  },
+  getTotalAmount(){
+    return this._get("http://localhost:8080/api/opportunities/total");
+  },
+  getDueAmount(){
+    return this._get("http://localhost:8080/api/opportunities/due");
+  },
+  getHighestOpportunity(){
+    return this._get("http://localhost:8080/api/opportunities/highest");
+  },
+
+  // ---- Writes ----
+  updateOpportunity(id, payload){
+    return this._put(`http://localhost:8080/api/opportunities/${id}`, payload);
+  }
+};
+
+/* ================================================================
+   3. STATE
+   ================================================================ */
+let opportunities = [];
+let searchQuery = "";
+let currentModalOppId = null;
+
+const STAGE_OPTIONS = ["PROSPECTING", "QUALIFICATION", "NEEDS_ANALYSIS", "VALUE_PROPOSITION"];
+const STATUS_OPTIONS = ["Pipeline", "Completed", "Potential"];
+const STATUS_BADGE_CLASS = { Pipeline: "badge-pipeline", Completed: "badge-completed", Potential: "badge-potential" };
+
+const ANALYTICS_CONFIG = {
+  pipelineTotal:      { title: "Pipeline Total",      call: () => OpportunityAPI.getPipelineTotal() },
+  committedTotal:     { title: "Committed Total",      call: () => OpportunityAPI.getCommittedTotal() },
+  totalAmount:        { title: "Total Amount",         call: () => OpportunityAPI.getTotalAmount() },
+  dueAmount:          { title: "Due Amount",            call: () => OpportunityAPI.getDueAmount() },
+  highestOpportunity: { title: "Highest Opportunity",   call: () => OpportunityAPI.getHighestOpportunity() }
+};
+
+/* ================================================================
+   4. FIXTURE DATA
+   Used only so the table renders something before a real backend
+   is wired up. Replace `listOpportunities()` below with a live
+   OpportunityAPI.listOpportunities() call once your endpoint exists.
+   ================================================================ */
+const FIXTURE_OPPORTUNITIES = [
+  { id: 1, accountName: "ABC Ltd",       closeDate: "2026-09-20", amount: 50000,  activity: "Called client",        stage: "PROSPECTING",       status: "Pipeline" },
+  { id: 2, accountName: "XYZ Pvt Ltd",   closeDate: "2026-10-02", amount: 90000,  activity: "Email sent",           stage: "QUALIFICATION",     status: "Potential" },
+  { id: 3, accountName: "Northgate Co.", closeDate: "2026-08-28", amount: 125000, activity: "Proposal shared",      stage: "VALUE_PROPOSITION", status: "Pipeline" },
+  { id: 4, accountName: "Coppergate",    closeDate: "2026-08-15", amount: 60000,  activity: "Contract signed",      stage: "VALUE_PROPOSITION", status: "Completed" },
+  { id: 5, accountName: "Lumenpath AI",  closeDate: "2026-11-05", amount: 210000, activity: "Needs review meeting", stage: "NEEDS_ANALYSIS",    status: "Pipeline" },
+  { id: 6, accountName: "Ironclad Ind.", closeDate: "2026-09-30", amount: 78000,  activity: "Demo scheduled",       stage: "QUALIFICATION",     status: "Potential" },
+];
+
+/* ================================================================
+   5. UI RENDER FUNCTIONS
+   ================================================================ */
+function formatCurrency(n){
+  if(n === null || n === undefined || isNaN(n)) return "—";
+  return "₹" + Number(n).toLocaleString("en-IN");
+}
+
+function renderTableState(message){
+  document.getElementById("tableBody").innerHTML =
+    `<tr class="state-row"><td colspan="8">${message}</td></tr>`;
+}
+
+function renderTable(){
+  const tbody = document.getElementById("tableBody");
+  const q = searchQuery.trim().toLowerCase();
+
+  const filtered = opportunities.filter(o => {
+    if(q === "") return true;
+    return o.accountName.toLowerCase().includes(q) ||
+           o.activity.toLowerCase().includes(q) ||
+           o.stage.toLowerCase().includes(q) ||
+           o.status.toLowerCase().includes(q);
+  });
+
+  document.getElementById("resultCount").textContent =
+    `${filtered.length} opportunit${filtered.length !== 1 ? "ies" : "y"}`;
+
+  if(filtered.length === 0){
+    renderTableState("No opportunities match this search.");
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(o => `
+    <tr>
+      <td class="id-cell mono">${o.id}</td>
+      <td class="acct-name">${o.accountName}</td>
+      <td class="muted-cell mono">${o.closeDate}</td>
+      <td class="amount-cell">${formatCurrency(o.amount)}</td>
+      <td class="activity-cell" title="${o.activity}">${o.activity}</td>
+      <td><span class="stage-badge">${o.stage}</span></td>
+      <td>
+        <span class="badge ${STATUS_BADGE_CLASS[o.status] || ""}">
+          <span class="dot"></span>${o.status}
+        </span>
+      </td>
+      <td class="right">
+        <button class="btn-edit" data-edit-id="${o.id}">Edit</button>
+      </td>
+    </tr>
+  `).join("");
+
+  document.querySelectorAll("[data-edit-id]").forEach(btn => {
+    btn.addEventListener("click", () => openModal(Number(btn.getAttribute("data-edit-id"))));
+  });
+}
+
+function setButtonLoading(btn, isLoading){
+  btn.classList.toggle("loading", isLoading);
+  btn.disabled = isLoading;
+}
+
+function renderAnalyticsLoading(title){
+  const box = document.getElementById("analyticsResult");
+  box.classList.remove("state-error");
+  box.classList.add("show");
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultBody").innerHTML = `<p class="result-value">Loading…</p>`;
+}
+
+function renderAnalyticsError(title, message){
+  const box = document.getElementById("analyticsResult");
+  box.classList.add("show", "state-error");
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultBody").innerHTML =
+    `<p class="result-value error-text">${message}</p>
+     <p class="result-footnote">Check that the Spring Boot API is running and reachable at ${API_BASE_URL}.</p>`;
+}
+
+function renderAnalyticsSimpleValue(title, value){
+  const box = document.getElementById("analyticsResult");
+  box.classList.remove("state-error");
+  box.classList.add("show");
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultBody").innerHTML = `
+    <p class="result-value">${formatCurrency(value)}</p>
+    <p class="result-footnote">Calculated by backend API</p>
+  `;
+}
+
+function renderAnalyticsOpportunity(title, opp){
+  const box = document.getElementById("analyticsResult");
+  box.classList.remove("state-error");
+  box.classList.add("show");
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultBody").innerHTML = `
+    <p class="result-value">${formatCurrency(opp.amount)}</p>
+    <div class="opp-mini">
+      <div class="opp-mini-row"><span class="k">Account</span><span class="v">${opp.accountName ?? "—"}</span></div>
+      <div class="opp-mini-row"><span class="k">Stage</span><span class="v">${opp.stage ?? "—"}</span></div>
+      <div class="opp-mini-row"><span class="k">Status</span><span class="v">${opp.status ?? "—"}</span></div>
+      <div class="opp-mini-row"><span class="k">Close Date</span><span class="v">${opp.closeDate ?? "—"}</span></div>
+    </div>
+    <p class="result-footnote">Calculated by backend API</p>
+  `;
+}
+
+/* ================================================================
+   6. MODAL HELPERS
+   ================================================================ */
+function openModal(oppId){
+  const opp = opportunities.find(o => o.id === oppId);
+  if(!opp) return;
+  currentModalOppId = opp.id;
+
+  document.getElementById("modalOppId").textContent = "OP-" + String(opp.id).padStart(4, "0");
+  document.getElementById("fieldAccountName").value = opp.accountName;
+  document.getElementById("fieldCloseDate").value = opp.closeDate;
+  document.getElementById("fieldAmount").value = opp.amount;
+  document.getElementById("fieldActivity").value = opp.activity;
+  document.getElementById("fieldStage").value = opp.stage;
+  document.getElementById("fieldStatus").value = opp.status;
+
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("open");
+  currentModalOppId = null;
+}
+
+/* ================================================================
+   7. EVENT HANDLERS
+   ================================================================ */
+async function handleLoadOpportunities(){
+  renderTableState("Loading opportunities...");
+  try{
+    // Swap this for a live call once the endpoint exists:
+    // opportunities = await OpportunityAPI.listOpportunities();
+    opportunities = await new Promise(resolve => setTimeout(() => resolve(FIXTURE_OPPORTUNITIES), 300));
+    renderTable();
+  }catch(err){
+    renderTableState("Unable to load opportunities. Please try again.");
+  }
+}
+
+function handleSearchInput(e){
+  searchQuery = e.target.value;
+  renderTable();
+}
+
+async function handleAnalyticsClick(e){
+  const btn = e.currentTarget;
+  const key = btn.getAttribute("data-analytics");
+  const config = ANALYTICS_CONFIG[key];
+  if(!config) return;
+
+  setButtonLoading(btn, true);
+  renderAnalyticsLoading(config.title);
+
+  try{
+    const result = await config.call();
+
+    if(key === "highestOpportunity"){
+      renderAnalyticsOpportunity(config.title, result);
+    }else{
+      // Backend is expected to return either a raw number or { value: number }
+      const value = (result && typeof result === "object") ? result.value : result;
+      renderAnalyticsSimpleValue(config.title, value);
+    }
+  }catch(err){
+    renderAnalyticsError(config.title, "Unable to fetch this value from the backend.");
+  }finally{
+    setButtonLoading(btn, false);
+  }
+}
+
+async function handleSaveOpportunity(){
+  if(currentModalOppId === null) return;
+
+  const payload = {
+    accountName: document.getElementById("fieldAccountName").value,
+    closeDate: document.getElementById("fieldCloseDate").value,
+    amount: Number(document.getElementById("fieldAmount").value) || 0,
+    activity: document.getElementById("fieldActivity").value,
+    stage: document.getElementById("fieldStage").value,
+    status: document.getElementById("fieldStatus").value
+  };
+
+  const saveBtn = document.getElementById("modalSaveBtn");
+  setButtonLoading(saveBtn, true);
+
+  try{
+    // Swap this for a live call once the endpoint exists:
+    // const updated = await OpportunityAPI.updateOpportunity(currentModalOppId, payload);
+    const updated = await new Promise(resolve =>
+      setTimeout(() => resolve({ id: currentModalOppId, ...payload }), 300)
+    );
+
+    opportunities = opportunities.map(o => o.id === updated.id ? { ...o, ...updated } : o);
+    renderTable();
+    closeModal();
+  }catch(err){
+    alert("Unable to update this opportunity. Please try again.");
+  }finally{
+    setButtonLoading(saveBtn, false);
+  }
+}
+
+/* ================================================================
+   8. WIRE UP EVENTS
+   ================================================================ */
+document.getElementById("searchInput").addEventListener("input", handleSearchInput);
+
+document.querySelectorAll("[data-analytics]").forEach(btn => {
+  btn.addEventListener("click", handleAnalyticsClick);
+});
+
+document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+document.getElementById("modalCancelBtn").addEventListener("click", closeModal);
+document.getElementById("modalSaveBtn").addEventListener("click", handleSaveOpportunity);
+document.getElementById("modalOverlay").addEventListener("click", (e) => {
+  if(e.target === document.getElementById("modalOverlay")) closeModal();
+});
+document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeModal(); });
+
+/* ================================================================
+   9. INIT
+   ================================================================ */
+handleLoadOpportunities();
+</script>
+
+</body>
+</html>
