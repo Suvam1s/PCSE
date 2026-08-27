@@ -14,12 +14,20 @@ public class AccountsControll{
     }
         @GetMapping("/id")
     public Optional<Accounts> searchById(@PathVariable long id) {
-        return accountsService.searchById(id);
+        return accountservice.searchById(id);
     }
 
     // Search accounts by name
     @GetMapping("/name")
     public List<Accounts> searchByName(@PathVariable String name) {
-        return accountsService.searchByName(name);
+        return accountservice.searchByName(name);
     }
+    @GetMapping("/add_account")
+      public Accounts addAccount(@PathVariable String name, String Billing_State, int phone, Prospect pros){
+        return accountservice.addAccount(name, Billing_State, phone, pros);
+    }
+    @GetMapping("/delete_account")
+        public  void deleteAccount(long id){
+            accountsRepository.deleteById(id);
+        }
 }
