@@ -41,10 +41,66 @@
     color: var(--text-primary);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
-    padding: 32px 24px;
+    padding: 20px 24px 32px;
   }
   .mono{ font-family: 'JetBrains Mono', monospace; }
   .wrap{ max-width: 1120px; margin: 0 auto; }
+
+  /* ============================================================
+     TOP NAVIGATION (shared across CRM pages)
+     ============================================================ */
+  .topnav-shell{ max-width: 1120px; margin: 0 auto 24px; }
+  .topnav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .topnav-brand{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -.01em;
+    white-space: nowrap;
+  }
+  .topnav-brand .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.18);
+  }
+  .topnav-links{ display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .topnav-link{
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background-color .15s ease, color .15s ease;
+    white-space: nowrap;
+  }
+  .topnav-link:hover{ background: #20232C; color: #D7DAE0; }
+  .topnav-link.active{ background: rgba(99,102,241,.12); color: #A5B4FC; }
+
+  @media (max-width: 640px){
+    .topnav{ flex-wrap: wrap; }
+    .topnav-links{ width: 100%; justify-content: flex-start; }
+  }
+
+  /* Smooth cross-page transitions (native in supporting browsers; no-op elsewhere) */
+  @view-transition{ navigation: auto; }
+  body{ animation: pageFadeIn .18s ease; }
+  @keyframes pageFadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
 
   /* ============================================================
      PAGE HEADER
@@ -443,6 +499,18 @@
 </style>
 </head>
 <body>
+
+<header class="topnav-shell">
+  <nav class="topnav" aria-label="Primary">
+    <div class="topnav-brand"><span class="dot"></span>CRM</div>
+    <div class="topnav-links">
+      <a class="topnav-link" href="home.html">Home</a>
+      <a class="topnav-link active" href="Accounts-page.html">Accounts</a>
+      <a class="topnav-link" href="leads-page.html">Leads</a>
+      <a class="topnav-link" href="opportunities-page.html">Opportunities</a>
+    </div>
+  </nav>
+</header>
 
 <div class="wrap">
 

@@ -1,33 +1,57 @@
 package crm.example.crm.Accounts;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountsControll{
+public class AccountsControll {
+
     private final AccountsService accountservice;
-    public AccountsControll(AccountsService accountservice){
-        this.accountservice= accountservice;
+
+    public AccountsControll(AccountsService accountservice) {
+        this.accountservice = accountservice;
     }
-        @GetMapping("/id")
+@GetMapping
+public List<Accounts> getAllAccounts() {
+    return accountservice.getAllAccounts();
+}
+
+    @GetMapping("/{id}")
     public Optional<Accounts> searchById(@PathVariable long id) {
         return accountservice.searchById(id);
     }
 
-    // Search accounts by name
-    @GetMapping("/name")
+    @GetMapping("/name/{name}")
     public List<Accounts> searchByName(@PathVariable String name) {
         return accountservice.searchByName(name);
     }
-    @GetMapping("/add_account")
-      public Accounts addAccount(@PathVariable String name, String Billing_State, int phone, Prospect pros){
-        return accountservice.addAccount(name, Billing_State, phone, pros);
+
+    @PostMapping("/add_account")
+    public Accounts addAccount(
+            @RequestParam String name,
+            @RequestParam String billing_address,
+            @RequestParam long phone,
+            @RequestParam Prospect pros) {
+
+        return accountservice.addAccount(
+                name,
+                billing_address,
+                phone,
+                pros
+        );
     }
-    @GetMapping("/delete_account")
-        public  void deleteAccount(long id){
-            accountsRepository.deleteById(id);
-        }
+
+    @DeleteMapping("/{id}")
+    public void deleteAccount(@PathVariable long id) {
+        accountservice.deleteAccount(id);
+    }
 }

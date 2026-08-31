@@ -1,33 +1,37 @@
-package crm.example.crm.Opportunity;
+package crm.example.crm.Accounts;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+
 @Service
-public class AccountService{
-    private final Accountsrepo accountsrepo;
-       public AccountsService(AccountsRepository accountsrepository) {
+public class AccountsService{
+    private final Accountsrepo accountsrepository;
+       public AccountsService(Accountsrepo accountsrepository) {
         this.accountsrepository = accountsrepository;
     }
-
-    // Search account by ID
+    public List<Accounts> getAllAccounts(){
+        return accountsrepository.findAll();
+    }
+   
     public Optional<Accounts> searchById(long id) {
         return accountsrepository.findById(id);
     }
 
-    // Search accounts by name
+   
     public List<Accounts> searchByName(String name) {
         return accountsrepository.findByName(name);
     }
 
-    // Add a new account
-    public Accounts addAccount(String name, String Billing_State, int phone, Prospect pros) {
+   
+    public Accounts addAccount(String name, String billing_address, long phone, Prospect pros) {
 
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Account name is mandatory.");
         }
 
-        if (Billing_State == null || Billing_State.trim().isEmpty()) {
-            throw new IllegalArgumentException("Billing State is mandatory.");
+        if (billing_address == null || billing_address.trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing address is mandatory.");
         }
 
         if (phone <= 0) {
@@ -42,23 +46,23 @@ public class AccountService{
 
         Accounts account = new Accounts(
                 name,
-                Billing_State,
+                billing_address,
                 phone,
                 pros
         );
 
-        return accountsRepository.save(account);
+        return accountsrepository.save(account);
     }
 
-    // Delete account by ID
+  
     public void deleteAccount(long id) {
 
-        if (!accountsRepository.existsById(id)) {
+        if (!accountsrepository.existsById(id)) {
             throw new IllegalArgumentException(
                     "Account with ID " + id + " does not exist."
             );
         }
 
-        accountsRepository.deleteById(id);
+        accountsrepository.deleteById(id);
     }
 }

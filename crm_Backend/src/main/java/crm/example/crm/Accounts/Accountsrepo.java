@@ -1,10 +1,9 @@
-package crm.example.crm.Opportunity;
+package crm.example.crm.Accounts;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-public interface Opportunityrepo extends JpaRepository<Opportunity, Long> {
-    List<Accounts> findByName(String name){
-        @Query("SELECT a.name FROM Accounts a ")
-    }
+
+public interface Accountsrepo extends JpaRepository<Accounts, Long> {
+    List<Accounts> findByName(String name);
+    
 }

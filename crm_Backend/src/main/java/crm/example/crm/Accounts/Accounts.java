@@ -1,13 +1,12 @@
 package crm.example.crm.Accounts;
-import java.util.*;
-
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 enum Prospect{
     Analyst,Competitor
 ,Customer
@@ -17,23 +16,23 @@ enum Prospect{
 
 }
 @Entity
-@Table(name= "Accounts")
+@Table(name= "accounts")
 public class Accounts{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private String Billing_State;
-    private int phone;
+    private String billing_address;
+    private long  phone;
     @Enumerated(EnumType.STRING)
-    private Prospect pros;
+    private Prospect prospect;
     public Accounts(){
     }
-    public Accounts(String name, String Billing_State, int phone,Prospect pros){
+    public Accounts(String name, String billing_address, long phone,Prospect prospect){
         this.name= name;
-        this.Billing_State= Billing_State;
+        this.billing_address= billing_address;
         this.phone= phone;
-        this.pros= pros;
+        this.prospect= prospect;
     }
     public long getId() {
     return id;
@@ -51,27 +50,27 @@ public void setName(String name) {
     this.name = name;
 }
 
-public String getBilling_State() {
-    return Billing_State;
+public String getBilling_address() {
+    return billing_address;
 }
 
-public void setBilling_State(String Billing_State) {
-    this.Billing_State = Billing_State;
+public void setBilling_address(String billing_address) {
+    this.billing_address = billing_address;
 }
 
-public int getPhone() {
+public long getPhone() {
     return phone;
 }
 
-public void setPhone(int phone) {
+public void setPhone(long phone) {
     this.phone = phone;
 }
 
-public Prospect getPros() {
-    return pros;
+public Prospect getProspect() {
+    return prospect;
 }
 
-public void setPros(Prospect pros) {
-    this.pros = pros;
+public void setProspect(Prospect prospect) {
+    this.prospect = prospect;
 }
 }

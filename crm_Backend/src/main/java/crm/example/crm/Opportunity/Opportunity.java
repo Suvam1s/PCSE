@@ -1,23 +1,22 @@
 package crm.example.crm.Opportunity;
 import java.time.LocalDate;
-import java.util.*;
 
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 enum Oppstage{
     PROSPECTING,
     QUALIFICATION,
     NEEDS_ANALYSIS,
-    VALUE_PROPOSITION,
+    VALUE_PROPOSITION
 }
 enum Oppstatus{
     PIPELINE,
-    COMMITTED,
+    COMMITTED
 }
 @Entity
 @Table(name = "opportunities")
