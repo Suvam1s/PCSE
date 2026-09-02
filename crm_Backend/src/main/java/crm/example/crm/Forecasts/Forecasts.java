@@ -11,6 +11,7 @@ public class Forecasts(){
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
     private Long amount;
+    private String AccountName;
     private String OpportunityName;
     @Enumerated(EnumType.STRING)
     private stage Stage;
@@ -21,8 +22,9 @@ public class Forecasts(){
     private LocalDate closeDate;
     public Forecasts()
     {}   
-       public Forecasts(String OpportunityName,stage Stage, Long amount, LocalDate closeDate){
+       public Forecasts(String OpportunityName,String AccountName, stage Stage, Long amount, LocalDate closeDate){
         this.OpportunityName= OpportunityName;
+        this.AccountName= AccountName;
         this.Stage= Stage;
         this.amount= amount;
         this.closeDate= closeDate;
@@ -42,7 +44,14 @@ public long getId() {
 public void setId(long id) {
     this.id = id;
 }
+public long AccountName() {
 
+    return AccountName;
+}
+
+public void setAccountName(String AccountName) {
+    this.AccountName =AccountName;
+}
 public String getOpportunityName() {
     return OpportunityName;
 }
