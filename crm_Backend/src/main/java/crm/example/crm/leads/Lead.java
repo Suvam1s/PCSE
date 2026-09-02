@@ -10,7 +10,7 @@ public class Lead {
     private Long id;
 private String name;
 private String email;
-private String phone;
+private Long phone;
 private String source;
 private String company;
 @Enumerated(EnumType.STRING)
@@ -19,7 +19,17 @@ private LeadStatus status;
 private LocalDateTime createdAt;
 @Column(name = "updated_at") 
 private LocalDateTime updatedAt;
-
+public Lead(){}
+    public Lead(String name, String source, String company, String email, Long phone,LeadStatus status, LocalDateTime updated_at, LocalDateTime created_at){
+        this.name= name;
+        this.source= source;
+        this.phone= phone;
+        this.status= status;
+        this.company= company;
+        this.created_at= created_at;
+        this.updated_at= updated_at;
+        this.email= email;
+    }
 public Long getId() {
     return id;
 }
