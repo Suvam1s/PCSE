@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forecasts · CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME TOKENS (matches Home / Accounts / Leads / Opportunities)
+     ============================================================ */
+  :root{
+    --bg: #0F1116;
+    --card: #15171D;
+    --card-header: #191C23;
+    --row-hover: #191C23;
+    --border: #252932;
+    --border-strong: #343946;
+    --input-bg: #14161C;
+    --input-border: #333844;
+    --text-primary: #F5F6F7;
+    --text-secondary: #8B93A1;
+    --text-tertiary: #5B6270;
+    --accent: #6366F1;
+    --accent-hover: #7B7EF5;
+    --success: #34D399;
+    --info: #38BDF8;
+    --amber: #FBBF24;
+    --danger: #F87171;
+    --danger-hover: #FCA5A5;
+    --teal: #2DD4BF;
+    --rose: #FB7185;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body{
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 20px 24px 32px;
+  }
+  .mono{ font-family: 'JetBrains Mono', monospace; }
+  .wrap{ max-width: 1200px; margin: 0 auto; }
+
+  /* ============================================================
+     TOP NAVIGATION (shared across CRM pages)
+     ============================================================ */
+  .topnav-shell{ max-width: 1200px; margin: 0 auto 24px; }
+  .topnav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .topnav-brand{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -.01em;
+    white-space: nowrap;
+  }
+  .topnav-brand .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.18);
+  }
+  .topnav-links{ display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .topnav-link{
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background-color .15s ease, color .15s ease;
+    white-space: nowrap;
+  }
+  .topnav-link:hover{ background: #20232C; color: #D7DAE0; }
+  .topnav-link.active{ background: rgba(99,102,241,.12); color: #A5B4FC; }
+
+  @media (max-width: 640px){
+    .topnav{ flex-wrap: wrap; }
+    .topnav-links{ width: 100%; justify-content: flex-start; }
+  }
+
+  /* Smooth cross-page transitions (native in supporting browsers; no-op elsewhere) */
+  @view-transition{ navigation: auto; }
+  body{ animation: pageFadeIn .18s ease; }
+  @keyframes pageFadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
+
+  /* ============================================================
+     PAGE HEADER
+     ============================================================ */
+  .page-header{ margin-bottom: 20px; }
+  .page-header h1{ margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+  .page-header p{ margin: 4px 0 0; font-size: 14px; color: var(--text-secondary); }
+
+  /* ============================================================
+     BUTTONS
+     ============================================================ */
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn-primary{
+    background: var(--accent);
+    border: 1px solid transparent;
+    color: #fff;
+    font-weight: 600;
+    padding: 9px 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .btn-primary:hover{ background: var(--accent-hover); }
+  .btn-ghost{
+    background: transparent;
+    border: 1px solid var(--input-border);
+    color: #C7CBD3;
+    padding: 8px 16px;
+  }
+  .btn-ghost:hover{ background: #20232C; }
+  .btn-danger{
+    background: var(--danger);
+    border: 1px solid transparent;
+    color: #1A0F0F;
+    font-weight: 600;
+    padding: 9px 16px;
+  }
+  .btn-danger:hover{ background: var(--danger-hover); }
+
+  /* ============================================================
+     CARD / TABLE TOOLBAR (search left, add right)
+     ============================================================ */
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .card-header{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .toolbar-title h2{ margin: 0; font-size: 14px; font-weight: 600; color: #E7E9ED; }
+  .toolbar-title p{ margin: 2px 0 0; font-size: 12px; color: #767D8A; }
+
+  .forecast-search{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .search-scope{
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 13px;
+    color: #D7DAE0;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B93A1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+  }
+  .search-box{
+    display: flex;
+    align-items: center;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 0 4px 0 12px;
+    min-width: 220px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-box:focus-within{
+    border-color: rgba(99,102,241,.6);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+  }
+  .search-box svg{ color: var(--text-tertiary); flex-shrink: 0; }
+  .search-box input{
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #F2F3F5;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 8px;
+    min-width: 0;
+  }
+  .search-box input::placeholder{ color: #5B6270; }
+  .search-box-btn{
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .search-box-btn:hover{ background: #20232C; color: #D7DAE0; }
+
+  /* ============================================================
+     TABLE
+     ============================================================ */
+  .table-scroll{ overflow-x: auto; }
+  table{ width: 100%; min-width: 960px; border-collapse: collapse; text-align: left; }
+  thead tr{ background: var(--card-header); }
+  th{
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #767D8A;
+    padding: 12px 20px;
+  }
+  th.right, td.right{ text-align: right; }
+  tbody tr{
+    border-top: 1px solid #21242C;
+    font-size: 14px;
+    color: #C7CBD3;
+    transition: background-color .12s ease;
+  }
+  tbody tr:hover{ background: var(--row-hover); }
+  td{ padding: 14px 20px; white-space: nowrap; }
+  .opp-name{ font-weight: 500; color: #F0F1F3; }
+  .muted-cell{ color: #8B93A1; font-size: 13px; }
+  .amount-cell{ font-weight: 600; color: #F0F1F3; }
+  .prob-cell{ color: #AEB4C0; font-size: 13px; }
+
+  .stage-badge{
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #A5B4FC;
+    background: rgba(99,102,241,.1);
+    box-shadow: inset 0 0 0 1px rgba(99,102,241,.25);
+    white-space: nowrap;
+  }
+
+  .row-actions{ display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+  .icon-btn{
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-tertiary);
+    padding: 7px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .icon-btn:hover{ background: #20232C; border-color: var(--border-strong); color: #D7DAE0; }
+  .icon-btn-delete:hover{
+    background: rgba(248,113,113,.12);
+    border-color: rgba(248,113,113,.3);
+    color: #FCA5A5;
+  }
+
+  /* Empty state — shown until the Forecasts API returns data */
+  .empty-row td{ padding: 0; }
+  .empty-state{
+    padding: 56px 24px;
+    text-align: center;
+  }
+  .empty-state .icon{
+    width: 40px; height: 40px;
+    margin: 0 auto 14px;
+    border-radius: 10px;
+    background: rgba(99,102,241,.1);
+    box-shadow: inset 0 0 0 1px rgba(99,102,241,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A5B4FC;
+  }
+  .empty-state h3{ margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #E7E9ED; }
+  .empty-state p{
+    margin: 0 auto;
+    max-width: 380px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     MODALS (checkbox-driven, no JavaScript)
+     ============================================================ */
+  .modal-toggle{ display: none; }
+
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 50;
+  }
+  #addForecastToggle:checked ~ #addForecastOverlay{ display: flex; }
+  #editForecastToggle:checked ~ #editForecastOverlay{ display: flex; }
+  #deleteForecastToggle:checked ~ #deleteForecastOverlay{ display: flex; }
+
+  .modal{
+    width: 100%;
+    max-width: 460px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-sm{ max-width: 380px; }
+  .modal-header{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+  }
+  .modal-header h3{ margin: 0; font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .modal-header p{ margin: 2px 0 0; font-size: 12px; color: var(--text-secondary); }
+  .modal-close{
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    text-decoration: none;
+  }
+  .modal-close:hover{ background: #252932; color: #D7DAE0; }
+
+  .modal-body{ padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-body p{ margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .modal-body p .hl{ color: #F0F1F3; font-weight: 600; }
+
+  .field-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field label{
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9AA0AC;
+    margin-bottom: 6px;
+  }
+  .field .req{ color: var(--rose); margin-left: 2px; }
+  .field input, .field select{
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #F2F3F5;
+    font-family: inherit;
+  }
+  .field select{
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B93A1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+  }
+  .field input::placeholder{ color: #5B6270; }
+  .field input:focus, .field select:focus{
+    outline: none;
+    border-color: rgba(99,102,241,.6);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+  }
+  .field-hint{ margin: 6px 0 0; font-size: 11.5px; color: var(--text-tertiary); line-height: 1.5; }
+
+  /* Stage mode segmented control (Manual / Prediction) — Add Forecast only */
+  .stage-field{ display: flex; flex-direction: column; gap: 10px; }
+  .stage-mode-toggle{
+    display: inline-flex;
+    padding: 3px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 9px;
+    width: fit-content;
+  }
+  .stage-mode-toggle input[type="radio"]{ display: none; }
+  .mode-pill{
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+  }
+  #addStageManual:checked ~ label[for="addStageManual"],
+  #addStagePrediction:checked ~ label[for="addStagePrediction"]{
+    background: var(--accent);
+    color: #fff;
+  }
+  .stage-prediction-note{
+    display: none;
+    background: rgba(99,102,241,.08);
+    border: 1px solid rgba(99,102,241,.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #C7CBD3;
+    line-height: 1.5;
+  }
+  .stage-field:has(#addStagePrediction:checked) .stage-manual-block{ display: none; }
+  .stage-field:has(#addStagePrediction:checked) .stage-prediction-note{ display: block; }
+
+  .modal-footer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 0;
+    background: var(--card);
+  }
+
+  @media (max-width: 640px){
+    body{ padding: 20px 14px; }
+    .field-row{ grid-template-columns: 1fr; }
+    .card-header{ flex-direction: column; align-items: stretch; }
+    .forecast-search{ width: 100%; }
+    .search-box{ min-width: 0; flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!--
+  Modal open/close state is handled with the checkbox + label technique
+  (pure CSS, no JavaScript). Each checkbox below controls the visibility
+  of the matching #...Overlay further down the page via a CSS sibling
+  selector. Clicking any label with a matching `for` attribute toggles
+  the checkbox — that includes trigger buttons, the modal's close (×)
+  icon, and its Cancel button.
+-->
+<input type="checkbox" id="addForecastToggle" class="modal-toggle" />
+<input type="checkbox" id="editForecastToggle" class="modal-toggle" />
+<input type="checkbox" id="deleteForecastToggle" class="modal-toggle" />
+
+<header class="topnav-shell">
+  <nav class="topnav" aria-label="Primary">
+    <div class="topnav-brand"><span class="dot"></span>CRM</div>
+    <div class="topnav-links">
+      <a class="topnav-link" href="home.html">Home</a>
+      <a class="topnav-link" href="Accounts-page.html">Accounts</a>
+      <a class="topnav-link" href="leads-page.html">Leads</a>
+      <a class="topnav-link" href="opportunities-page.html">Opportunities</a>
+      <a class="topnav-link active" href="forecasts-page.html">Forecasts</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <div class="page-header">
+    <h1>Forecasts</h1>
+    <p>Forecast and track upcoming opportunities.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="toolbar-title">
+        <h2>Forecasts Database</h2>
+        <p>Populated from the Forecasts API</p>
+      </div>
+
+      <!-- Connect this form to the existing Forecasts search API endpoint,
+           e.g. GET /forecasts/search?field={scope}&query={q} -->
+      <form class="forecast-search" method="get" action="#">
+        <select class="search-scope" name="field" aria-label="Search by">
+          <option value="all">All fields</option>
+          <option value="opportunityName">Opportunity Name</option>
+          <option value="accountName">Account Name</option>
+          <option value="stage">Stage</option>
+        </select>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" name="q" placeholder="Search forecasts..." />
+          <button class="search-box-btn" type="submit" title="Search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </form>
+
+      <label for="addForecastToggle" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add
+      </label>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Opportunity Name</th>
+            <th>Account Name</th>
+            <th>Close Date</th>
+            <th>Amount</th>
+            <th>Stage</th>
+            <th>Probability</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+
+        <!--
+          Rows will be populated dynamically once the Forecasts API is
+          connected. Do not render sample/mock forecast data here — the
+          table starts empty and is filled only from the live API response.
+        -->
+        <tbody>
+          <tr class="empty-row">
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                </div>
+                <h3>No forecasts yet</h3>
+                <p>Once connected to the Forecasts API, opportunity forecasts will appear here.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+        <!--
+          Example row template (reference only — not rendered on the page).
+          Once the Forecasts API returns records, generate one <tr> like
+          this per record. Account Name and Stage should reflect the
+          current database value (predicted or manually overridden).
+          Wiring "Edit" and "Delete" to a specific row's data requires
+          JavaScript: populate #editForecastOverlay / #deleteForecastOverlay
+          with that row's values before the modal is shown.
+
+        <tr>
+          <td class="opp-name">{{opportunityName}}</td>
+          <td class="muted-cell">{{accountName}}</td>
+          <td class="muted-cell mono">{{closeDate}}</td>
+          <td class="amount-cell">{{amount}}</td>
+          <td><span class="stage-badge">{{stage}}</span></td>
+          <td class="prob-cell">{{probability}}%</td>
+          <td class="right">
+            <div class="row-actions">
+              <button type="button" class="icon-btn" title="Edit forecast">
+                (edit icon — open #editForecastOverlay and populate its
+                fields with this row's data before showing it)
+              </button>
+              <button type="button" class="icon-btn icon-btn-delete" title="Delete forecast">
+                (trash icon — open #deleteForecastOverlay for this row's id)
+              </button>
+            </div>
+          </td>
+        </tr>
+        -->
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADD FORECAST MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="addForecastOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Add Forecast</h3>
+        <p>Create a new opportunity forecast</p>
+      </div>
+      <label for="addForecastToggle" class="modal-close" title="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </label>
+    </div>
+
+    <!-- Connect this form's submission to the existing "Create Forecast" API endpoint -->
+    <form id="addForecastForm" method="post" action="#">
+      <div class="modal-body">
+        <div class="field">
+          <label for="addOppName">Opportunity Name<span class="req">*</span></label>
+          <input type="text" id="addOppName" name="opportunityName" placeholder="Opportunity name" required />
+        </div>
+
+        <div class="field">
+          <label for="addAccountName">Account Name<span class="req">*</span></label>
+          <!-- Populate account options from the existing Accounts API (Accounts.name) -->
+          <select id="addAccountName" name="accountId" required>
+            <option value="" disabled selected>Select account…</option>
+            <!-- <option value="{{account.id}}">{{account.name}}</option> repeated per Accounts API result -->
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="addCloseDate">Close Date<span class="req">*</span></label>
+            <input type="date" id="addCloseDate" name="closeDate" required />
+          </div>
+          <div class="field">
+            <label for="addAmount">Amount<span class="req">*</span></label>
+            <input type="number" id="addAmount" name="amount" placeholder="0" min="0" step="0.01" required />
+          </div>
+        </div>
+
+        <div class="field stage-field">
+          <label>Stage</label>
+          <div class="stage-mode-toggle">
+            <input type="radio" name="stageMode" id="addStageManual" checked />
+            <label for="addStageManual" class="mode-pill">Manual</label>
+            <input type="radio" name="stageMode" id="addStagePrediction" />
+            <label for="addStagePrediction" class="mode-pill">Prediction</label>
+          </div>
+
+          <div class="stage-manual-block">
+            <select id="addStage" name="stage">
+              <option value="Qualification">Qualification</option>
+              <option value="NeedAnalysis">NeedAnalysis</option>
+              <option value="Proposal">Proposal</option>
+              <option value="Negotiation">Negotiation</option>
+              <option value="ClosedWon">ClosedWon</option>
+              <option value="ClosedLost">ClosedLost</option>
+            </select>
+          </div>
+
+          <!-- No fake prediction logic — the prediction system is still
+               under development. This note is a placeholder for that
+               future integration point. -->
+          <p class="stage-prediction-note">
+            Stage and probability will be determined automatically by the prediction system once it is connected to this form. No manual stage selection is needed.
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="addProbability">Probability</label>
+          <input type="number" id="addProbability" name="probability" placeholder="0–100" min="0" max="100" />
+          <p class="field-hint">Displays the value returned by the backend / prediction system. Editable manually when Stage is set to Manual.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <label for="addForecastToggle" class="btn btn-ghost">Cancel</label>
+        <button type="submit" class="btn btn-primary">Add Forecast</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     EDIT FORECAST MODAL
+     (Skeleton only — fields are not pre-filled since no forecast
+     data exists yet. Once wired to the API, populate each field
+     with the selected row's current database values before the
+     row's Edit control opens this modal.)
+     ============================================================ -->
+<div class="modal-overlay" id="editForecastOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Edit Forecast</h3>
+        <p>Update this opportunity's forecast details</p>
+      </div>
+      <label for="editForecastToggle" class="modal-close" title="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </label>
+    </div>
+
+    <!-- Connect this form's submission to the existing "Update Forecast" API endpoint
+         (e.g. PUT /forecasts/{id}) -->
+    <form id="editForecastForm" method="post" action="#">
+      <div class="modal-body">
+        <div class="field">
+          <label for="editOppName">Opportunity Name<span class="req">*</span></label>
+          <input type="text" id="editOppName" name="opportunityName" placeholder="Opportunity name" required />
+        </div>
+
+        <div class="field">
+          <label for="editAccountName">Account Name<span class="req">*</span></label>
+          <!-- Populate account options from the existing Accounts API (Accounts.name);
+               pre-select the option matching this forecast's current account -->
+          <select id="editAccountName" name="accountId" required>
+            <option value="" disabled selected>Select account…</option>
+            <!-- <option value="{{account.id}}">{{account.name}}</option> repeated per Accounts API result -->
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="editCloseDate">Close Date<span class="req">*</span></label>
+            <input type="date" id="editCloseDate" name="closeDate" required />
+          </div>
+          <div class="field">
+            <label for="editAmount">Amount<span class="req">*</span></label>
+            <input type="number" id="editAmount" name="amount" placeholder="0" min="0" step="0.01" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="editStage">Stage<span class="req">*</span></label>
+          <!-- Reflects the current database value, whether it was set by
+               the prediction system or a previous manual edit. Changing
+               it here and saving overrides the value in the database. -->
+          <select id="editStage" name="stage" required>
+            <option value="Qualification">Qualification</option>
+            <option value="NeedAnalysis">NeedAnalysis</option>
+            <option value="Proposal">Proposal</option>
+            <option value="Negotiation">Negotiation</option>
+            <option value="ClosedWon">ClosedWon</option>
+            <option value="ClosedLost">ClosedLost</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="editProbability">Probability</label>
+          <input type="number" id="editProbability" name="probability" placeholder="0–100" min="0" max="100" />
+          <p class="field-hint">Current value from the database — may have been set by the prediction system or a previous manual edit.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <label for="editForecastToggle" class="btn btn-ghost">Cancel</label>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     DELETE CONFIRMATION MODAL
+     (Skeleton only — generic copy until wired to a specific row.)
+     ============================================================ -->
+<div class="modal-overlay" id="deleteForecastOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>Delete forecast?</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this forecast? This action cannot be undone.</p>
+    </div>
+    <!-- Wire this form's submission to send a DELETE request to the
+         existing Forecasts API for the selected record -->
+    <form method="post" action="#">
+      <div class="modal-footer">
+        <label for="deleteForecastToggle" class="btn btn-ghost">Cancel</label>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
