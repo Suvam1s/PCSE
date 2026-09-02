@@ -10,6 +10,7 @@ public class Forecasts(){
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
+    private Long amount;
     private String OpportunityName;
     @Enumerated(EnumType.STRING)
     private stage Stage;
@@ -20,9 +21,10 @@ public class Forecasts(){
     private LocalDate closeDate;
     public Forecasts()
     {}   
-       public Forecasts(String OpportunityName, stage Stage, LocalDate closeDate){
+       public Forecasts(String OpportunityName,stage Stage, Long amount, LocalDate closeDate){
         this.OpportunityName= OpportunityName;
         this.Stage= Stage;
+        this.amount= amount;
         this.closeDate= closeDate;
     }
     public Accounts getacccounts(){
