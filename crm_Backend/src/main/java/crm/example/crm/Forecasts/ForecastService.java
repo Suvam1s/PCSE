@@ -1,7 +1,11 @@
 package crm.example.crm.Forecasts;
-import java.util.*;
+import  java.time.LocalDate;
+import java.util.Optional;
 
-import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.Service;
+
+import crm.example.crm.Accounts.Accounts;
+import crm.example.crm.Accounts.Accountsrepo;
 
 @Service
 public class ForecastService {
@@ -22,7 +26,7 @@ public class ForecastService {
             Long amount,
             LocalDate closeDate) {
 
-        Optional<Accounts> account = accountsrepository1.findByName(AccountName);
+    Optional<Accounts> account = accountsrepository1.findByName(AccountName);
 
         if (account.isEmpty()) {
             throw new IllegalArgumentException("name not found");
@@ -35,7 +39,7 @@ public class ForecastService {
 
         Forecasts forecast = new Forecasts(
                 OpportunityName,
-                account.get(),
+                account.get().getName(),
                 Stage,
                 amount,
                 closeDate

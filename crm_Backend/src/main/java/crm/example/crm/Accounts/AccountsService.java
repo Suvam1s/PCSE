@@ -19,8 +19,8 @@ public class AccountsService{
     }
 
    
-    public List<Accounts> searchByName(String name) {
-        return accountsrepository.findByName(name);
+    public Optional<Accounts> searchByName(String name) {
+        return accountsrepository.findByName (name);
     }
 
    

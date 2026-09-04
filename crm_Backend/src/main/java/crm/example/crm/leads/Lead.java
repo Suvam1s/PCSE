@@ -1,7 +1,15 @@
 package crm.example.crm.leads;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 @Entity
 @Table(name = "leads")
 public class Lead {
@@ -20,14 +28,14 @@ private LocalDateTime createdAt;
 @Column(name = "updated_at") 
 private LocalDateTime updatedAt;
 public Lead(){}
-    public Lead(String name, String source, String company, String email, Long phone,LeadStatus status, LocalDateTime updated_at, LocalDateTime created_at){
+    public Lead(String name, String source, String company, String email, Long phone,LeadStatus status, LocalDateTime updatedAt, LocalDateTime createdAt){
         this.name= name;
         this.source= source;
         this.phone= phone;
         this.status= status;
         this.company= company;
-        this.created_at= created_at;
-        this.updated_at= updated_at;
+        this.createdAt= createdAt;
+        this.updatedAt= updatedAt;
         this.email= email;
     }
 public Long getId() {
@@ -54,11 +62,11 @@ public void setEmail(String email) {
     this.email = email;
 }
 
-public String getPhone() {
+public Long getPhone() {
     return phone;
 }
 
-public void setPhone(String phone) {
+public void setPhone(Long phone) {
     this.phone = phone;
 }
 

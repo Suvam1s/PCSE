@@ -1,24 +1,34 @@
 package crm.example.crm.Forecasts;
-import java.util.*;
-import jakarta.persistence.*;
+import  java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 enum stage{
     Qualification, NeedAnalysis, ClosedLost, ClosedWon, Proposal, Negotiation
 }
 @Entity
-@Table(name = "Forecasts")
-public class Forecasts(){
+@Table(name = "forecast")
+public class Forecasts{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
     private Long amount;
+    @Column(name = "accountname")
     private String AccountName;
+    @Column(name = "opportunityname")
     private String OpportunityName;
     @Enumerated(EnumType.STRING)
     private stage Stage;
-    @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
-    private Accounts account;
+  
+   // private Accounts account;
     private double probability;
+    @Column(name = "closedate")
     private LocalDate closeDate;
     public Forecasts()
     {}   
@@ -29,12 +39,12 @@ public class Forecasts(){
         this.amount= amount;
         this.closeDate= closeDate;
     }
-    public Accounts getacccounts(){
-        return account;
-    }
-    public void setAccounts(Accounts account){
-        this.account= account;
-    }
+//    public Accounts getacccounts(){
+  //      return account;
+    //}
+    //public void setAccounts(Accounts account){
+     //   this.account= account;
+    //}
 
 public long getId() {
 
@@ -44,7 +54,7 @@ public long getId() {
 public void setId(long id) {
     this.id = id;
 }
-public long AccountName() {
+public String getAccountName() {
 
     return AccountName;
 }
@@ -68,13 +78,13 @@ public void setStage(stage Stage) {
     this.Stage = Stage;
 }
 
-public Accounts getAccount() {
-    return account;
-}
+//public Accounts getAccount() {
+//    return account;
+//}
 
-public void setAccount(Accounts account) {
-    this.account = account;
-}
+//public void setAccount(Accounts account) {
+//    this.account = account;
+//}
 
 public double getProbability() {
     return probability;

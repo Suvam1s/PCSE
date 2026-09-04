@@ -1,7 +1,8 @@
-package crm.example.crm.Forecasts;
-import java.util.*;
 
-import org.springframework.data.jpa.repository.*;
-public interface Accountsrepo extends JpaRepository<Accounts, Long> {
+package crm.example.crm.Forecasts;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import  crm.example.crm.Accounts.Accounts;
+public interface ForecastsRepo extends JpaRepository<Forecasts, Long> {
     boolean existsByAccountAndOpportunityName(Accounts account, String OpportunityName);
 }

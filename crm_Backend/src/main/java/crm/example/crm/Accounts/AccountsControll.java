@@ -31,7 +31,7 @@ public List<Accounts> getAllAccounts() {
     }
 
     @GetMapping("/name/{name}")
-    public List<Accounts> searchByName(@PathVariable String name) {
+    public Optional<Accounts> searchByName(@PathVariable String name) {
         return accountservice.searchByName(name);
     }
 
