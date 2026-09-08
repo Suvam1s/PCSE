@@ -1,5 +1,6 @@
 package crm.example.crm.Forecasts;
-import  java.time.LocalDate;
+
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,90 +10,101 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-enum stage{
-    Qualification, NeedAnalysis, ClosedLost, ClosedWon, Proposal, Negotiation
-}
+
 @Entity
 @Table(name = "forecast")
-public class Forecasts{
+public class Forecasts {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private Long amount;
+
     @Column(name = "accountname")
-    private String AccountName;
+    private String accountName;
+
     @Column(name = "opportunityname")
-    private String OpportunityName;
+    private String opportunityName;
+
     @Enumerated(EnumType.STRING)
-    private stage Stage;
-  
-   // private Accounts account;
+    private ForecastStage stage;
+
     private double probability;
+
     @Column(name = "closedate")
     private LocalDate closeDate;
-    public Forecasts()
-    {}   
-       public Forecasts(String OpportunityName,String AccountName, stage Stage, Long amount, LocalDate closeDate){
-        this.OpportunityName= OpportunityName;
-        this.AccountName= AccountName;
-        this.Stage= Stage;
-        this.amount= amount;
-        this.closeDate= closeDate;
+
+    public Forecasts() {
     }
-//    public Accounts getacccounts(){
-  //      return account;
-    //}
-    //public void setAccounts(Accounts account){
-     //   this.account= account;
-    //}
 
-public long getId() {
+    public Forecasts(
+            String opportunityName,
+            String accountName,
+            ForecastStage stage,
+            Long amount,
+            LocalDate closeDate,
+            double probability) {
+        this.opportunityName = opportunityName;
+        this.accountName = accountName;
+        this.stage = stage;
+        this.amount = amount;
+        this.closeDate = closeDate;
+        this.probability = probability;
+    }
 
-    return id;
-}
+    public Long getId() {
+        return id;
+    }
 
-public void setId(long id) {
-    this.id = id;
-}
-public String getAccountName() {
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    return AccountName;
-}
+    public Long getAmount() {
+        return amount;
+    }
 
-public void setAccountName(String AccountName) {
-    this.AccountName =AccountName;
-}
-public String getOpportunityName() {
-    return OpportunityName;
-}
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
 
-public void setOpportunityName(String OpportunityName) {
-    this.OpportunityName = OpportunityName;
-}
+    public String getAccountName() {
+        return accountName;
+    }
 
-public stage getStage() {
-    return Stage;
-}
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
 
-public void setStage(stage Stage) {
-    this.Stage = Stage;
-}
+    public String getOpportunityName() {
+        return opportunityName;
+    }
 
-//public Accounts getAccount() {
-//    return account;
-//}
+    public void setOpportunityName(String opportunityName) {
+        this.opportunityName = opportunityName;
+    }
 
-//public void setAccount(Accounts account) {
-//    this.account = account;
-//}
+    public ForecastStage getStage() {
+        return stage;
+    }
 
-public double getProbability() {
-    return probability;
-}
+    public void setStage(ForecastStage stage) {
+        this.stage = stage;
+    }
 
-public void setProbability(double probability) {
-    this.probability = probability;
-}
+    public double getProbability() {
+        return probability;
+    }
 
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
 
+    public LocalDate getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(LocalDate closeDate) {
+        this.closeDate = closeDate;
+    }
 }
